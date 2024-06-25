@@ -9,4 +9,9 @@ export const SignupValidation = z.object({
         message: "Email adresa ima krivu domenu. (hint: ♥️)"
     }),
     password:z.string().min(8, {message: "Lozinka mora imati barem 8 znakova."})
-  })
+    })
+
+export const SigninValidation = z.object({
+    email: z.string().email({ message: "Neispravna email adresa." }),
+    password:z.string()
+})
