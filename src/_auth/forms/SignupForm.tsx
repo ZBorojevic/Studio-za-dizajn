@@ -18,7 +18,7 @@ const SignupForm = () => {
   const { toast } = useToast()
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext()
   const navigate = useNavigate()
-  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount()
+  const { mutateAsync: createUserAccount, isLoading: isCreatingAccount } = useCreateUserAccount() //Nisam siguran jel je isLoading ili isPending - treba provjeriti u dokumentaciji.
   const { mutateAsync: signInAccount, isLoading: isSigningIn } = useSignInAccount()
 
   // 1. Define your form.
