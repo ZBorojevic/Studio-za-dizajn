@@ -11,15 +11,19 @@ import { PostValidation } from "@/lib/validation"
 import { Models } from "appwrite"
 import { useUserContext } from "@/context/AuthContext"
 import { useToast } from "../ui/use-toast"
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations"
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations"
 
 type PostFormProps = {
-  post?: Models.Document
+  post?: Models.Document,
+  action: `Create` | `Ažuriraj`
 }
 
-const PostForm = ({ post }: PostFormProps ) => {
+const PostForm = ({ post, action }: PostFormProps ) => {
   const { mutateAsync:createPost, isPending: isLoadingCreate } =
   useCreatePost() 
+  const { mutateAsync:updatePost, isPending: isLoadingUpdate } =
+  useUpdatePost() 
+
 
   const { user } = useUserContext();
   const { toast } = useToast();
@@ -37,6 +41,20 @@ const PostForm = ({ post }: PostFormProps ) => {
  
   // 2. Define a submit handler.
  async function onSubmit(values: z.infer<typeof PostValidation>) {
+    if(post && action === 'Ažuriraj') {
+      const updatedPost = await updatePost({
+        ...values, 
+        postId: post.$id,
+        imageId: post?.imageId,
+        imageUrl: post?.imageUrl
+      })
+
+      if(!updatedPost) {
+        toast({title: 'Molim pokušajte ponovo.'})
+      }
+      return navigate(`/posts/${post.$id}`)
+    }
+
     const newPost = await createPost({
       ...values,
       userId: user.id,
@@ -52,7 +70,7 @@ const PostForm = ({ post }: PostFormProps ) => {
   return (
     <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)} 
-    className="flex flex-col gap-9 max-w-5xl">
+    className="flex flex-col gap-9 w-full max-w-5xl">
       <FormField
         control={form.control}
         name="caption"
@@ -113,7 +131,12 @@ const PostForm = ({ post }: PostFormProps ) => {
       />
       <div className="flex gap-4 items-center justify-end">
         <Button type="button" className="shad-button_dark_4"> Prekini </Button>
-        <Button type="submit" className="shad-button_primary whitespace-nowrap"> Objavi </Button>
+        <Button type="submit" 
+                className="shad-button_primary whitespace-nowrap"
+                disabled={isLoadingCreate || isLoadingUpdate}> 
+            {isLoadingCreate || isLoadingUpdate && 'Učitavanje...'}    
+            {action}     
+        </Button>
       </div>
       
     </form>

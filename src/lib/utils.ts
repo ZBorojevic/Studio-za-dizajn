@@ -78,8 +78,8 @@ export const formatPostTimestamp = (timestamp: string = ""): string => {
   const diff: number = now.getTime() - date.getTime();
   const diffInHours: number = diff / (1000 * 60 * 60);
 
-  if (diffInHours >= 24) {
-    // If the post is older than 24 hours, use formatDateString
+  if (diffInHours >= 72) {
+    // If the post is older than 72 hours, use formatDateString
     return formatDateString(timestamp);
   } else {
     // If the post is less than 24 hours old, use multiFormatDateString
